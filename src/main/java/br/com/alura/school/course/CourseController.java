@@ -1,5 +1,6 @@
 package br.com.alura.school.course;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -7,6 +8,7 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -22,7 +24,9 @@ class CourseController {
 
     @GetMapping(value = "/courses")
     ResponseEntity<List<CourseResponse>> allCourses() {
-        return ResponseEntity.ok().build();
+        List<Course> courses = courseRepository.findAll();
+        List<CourseResponse> courseResponses = courses.stream().map(CourseResponse::new).collect(Collectors.toList());
+        return new ResponseEntity<>(courseResponses, HttpStatus.OK);
     }
 
     @GetMapping("/courses/{code}")
