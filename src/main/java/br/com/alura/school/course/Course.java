@@ -1,5 +1,7 @@
 package br.com.alura.school.course;
 
+import br.com.alura.school.user.User;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -7,10 +9,13 @@ import javax.persistence.Id;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static javax.persistence.GenerationType.IDENTITY;
 
 @Entity
-class Course {
+public class Course {
 
     @Id
     @GeneratedValue(strategy = IDENTITY)
@@ -27,6 +32,8 @@ class Course {
     private String name;
 
     private String description;
+
+    private List<User> enrolledUsers = new ArrayList<>();
 
     @Deprecated
     protected Course() { }
