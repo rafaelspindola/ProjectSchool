@@ -56,4 +56,7 @@ public class Course {
         return description;
     }
 
+    public Long getId() {
+        return id;
+    }
 }

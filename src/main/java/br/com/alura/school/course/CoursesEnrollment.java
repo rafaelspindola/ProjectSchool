@@ -3,6 +3,7 @@ package br.com.alura.school.course;
 import br.com.alura.school.user.User;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.Objects;
@@ -36,62 +37,53 @@ public class CoursesEnrollment {
     @Column(name = "number_of_enrollments")
     private int numberOfEnrollments;
 
+    @Size(max=10)
+    @NotBlank
+    @Column(nullable = false, unique = true)
+    private String code;
+
+    public CoursesEnrollment(Course course, User user, String username, String email, int numberOfEnrollments, String code) {
+        this.course = course;
+        this.user = user;
+        this.username = username;
+        this.email = email;
+        this.numberOfEnrollments = numberOfEnrollments;
+        this.code = code;
+        this.id = new CoursesEnrollmentId(course.getId(), user.getId());
+    }
+
     private CoursesEnrollment() {}
 
     public CoursesEnrollmentId getId() {
         return id;
     }
 
-    public void setId(CoursesEnrollmentId id) {
-        this.id = id;
-    }
-
     public Course getCourse() {
         return course;
-    }
-
-    public void setCourse(Course course) {
-        this.course = course;
     }
 
     public User getUser() {
         return user;
     }
 
-    public void setUser(User user) {
-        this.user = user;
-    }
-
     public String getUsername() {
         return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public String getEmail() {
         return email;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
     public Date getEnrollmentDate() {
         return enrollmentDate;
-    }
-
-    public void setEnrollmentDate(Date enrollmentDate) {
-        this.enrollmentDate = enrollmentDate;
     }
 
     public int getNumberOfEnrollments() {
         return numberOfEnrollments;
     }
 
-    public void setNumberOfEnrollments(int numberOfEnrollments) {
-        this.numberOfEnrollments = numberOfEnrollments;
+    public String getCode() {
+        return code;
     }
 
     @Override
