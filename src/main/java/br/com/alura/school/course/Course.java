@@ -36,7 +36,7 @@ public class Course {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<CourseEnrollment> enrolledUsers = new ArrayList<>();
+    private List<Enrollment> enrolledUsers = new ArrayList<>();
 
     @Deprecated
     protected Course() { }
@@ -64,15 +64,15 @@ public class Course {
     }
 
     public void addUser(User user) {
-        CourseEnrollment coursesEnrollment = new CourseEnrollment(this, user);
+        Enrollment coursesEnrollment = new Enrollment(this, user);
         enrolledUsers.add(coursesEnrollment);
         user.getEnrolledCourses().add(coursesEnrollment);
     }
 
     public void removeUser(User user) {
-        for (Iterator<CourseEnrollment> iterator = enrolledUsers.iterator();
+        for (Iterator<Enrollment> iterator = enrolledUsers.iterator();
              iterator.hasNext(); ) {
-            CourseEnrollment coursesEnrollment = iterator.next();
+            Enrollment coursesEnrollment = iterator.next();
 
             if (coursesEnrollment.getCourse().equals(this) &&
                     coursesEnrollment.getUser().equals(user)) {

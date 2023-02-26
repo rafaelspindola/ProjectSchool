@@ -2,22 +2,26 @@ package br.com.alura.school.course;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import java.io.Serializable;
 import java.util.Objects;
 
 @Embeddable
-public class CourseEnrollmentId
+public class EnrollmentId
         implements Serializable {
 
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "course_id")
     private Long courseId;
 
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long userId;
 
-    private CourseEnrollmentId() {}
+    private EnrollmentId() {}
 
-    public CourseEnrollmentId(
+    public EnrollmentId(
             Long courseId,
             Long userId) {
         this.courseId = courseId;
@@ -39,7 +43,7 @@ public class CourseEnrollmentId
         if (o == null || getClass() != o.getClass())
             return false;
 
-        CourseEnrollmentId that = (CourseEnrollmentId) o;
+        EnrollmentId that = (EnrollmentId) o;
         return Objects.equals(courseId, that.courseId) &&
                 Objects.equals(userId, that.userId);
     }

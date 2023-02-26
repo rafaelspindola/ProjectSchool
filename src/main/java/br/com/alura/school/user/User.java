@@ -1,6 +1,6 @@
 package br.com.alura.school.user;
 
-import br.com.alura.school.course.CourseEnrollment;
+import br.com.alura.school.course.Enrollment;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.NaturalIdCache;
@@ -43,7 +43,7 @@ public class User {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<CourseEnrollment> enrolledCourses = new ArrayList<>();
+    private List<Enrollment> enrolledCourses = new ArrayList<>();
 
     @Deprecated
     protected User() {}
@@ -65,11 +65,11 @@ public class User {
         return id;
     }
 
-    public List<CourseEnrollment> getEnrolledCourses() {
+    public List<Enrollment> getEnrolledCourses() {
         return enrolledCourses;
     }
 
-    public void setEnrolledCourses(List<CourseEnrollment> enrolledCourses) {
+    public void setEnrolledCourses(List<Enrollment> enrolledCourses) {
         this.enrolledCourses = enrolledCourses;
     }
 
