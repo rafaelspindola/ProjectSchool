@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 @Embeddable
-public class CoursesEnrollmentId
+public class CourseEnrollmentId
         implements Serializable {
 
     @Column(name = "course_id")
@@ -15,9 +15,9 @@ public class CoursesEnrollmentId
     @Column(name = "user_id")
     private Long userId;
 
-    private CoursesEnrollmentId() {}
+    private CourseEnrollmentId() {}
 
-    public CoursesEnrollmentId(
+    public CourseEnrollmentId(
             Long courseId,
             Long userId) {
         this.courseId = courseId;
@@ -39,7 +39,7 @@ public class CoursesEnrollmentId
         if (o == null || getClass() != o.getClass())
             return false;
 
-        CoursesEnrollmentId that = (CoursesEnrollmentId) o;
+        CourseEnrollmentId that = (CourseEnrollmentId) o;
         return Objects.equals(courseId, that.courseId) &&
                 Objects.equals(userId, that.userId);
     }

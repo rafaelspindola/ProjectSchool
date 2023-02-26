@@ -3,18 +3,17 @@ package br.com.alura.school.course;
 import br.com.alura.school.user.User;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.Date;
 import java.util.Objects;
 
-@Entity(name = "CoursesEnrollment")
+@Entity(name = "CourseEnrollment")
 @Table(name = "courses_enrollment")
-public class CoursesEnrollment {
+public class CourseEnrollment {
 
 
     @EmbeddedId
-    private CoursesEnrollmentId id;
+    private CourseEnrollmentId id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("courseId")
@@ -37,25 +36,27 @@ public class CoursesEnrollment {
     @Column(name = "number_of_enrollments")
     private int numberOfEnrollments;
 
-    @Size(max=10)
-    @NotBlank
-    @Column(nullable = false, unique = true)
-    private String code;
-
-    public CoursesEnrollment(Course course, User user, String username, String email, int numberOfEnrollments, String code) {
+    public CourseEnrollment(Course course, User user) {
         this.course = course;
         this.user = user;
         this.username = username;
         this.email = email;
         this.numberOfEnrollments = numberOfEnrollments;
-        this.code = code;
-        this.id = new CoursesEnrollmentId(course.getId(), user.getId());
+        this.id = new CourseEnrollmentId(course.getId(), user.getId());
     }
 
-    private CoursesEnrollment() {}
+    private CourseEnrollment() {}
 
-    public CoursesEnrollmentId getId() {
+    public CourseEnrollmentId getId() {
         return id;
+    }
+
+    public void setCourse(Course course) {
+        this.course = course;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Course getCourse() {
@@ -82,10 +83,6 @@ public class CoursesEnrollment {
         return numberOfEnrollments;
     }
 
-    public String getCode() {
-        return code;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -93,7 +90,7 @@ public class CoursesEnrollment {
         if (o == null || getClass() != o.getClass())
             return false;
 
-        CoursesEnrollment that = (CoursesEnrollment) o;
+        CourseEnrollment that = (CourseEnrollment) o;
         return Objects.equals(course, that.course) &&
                 Objects.equals(user, that.user);
     }

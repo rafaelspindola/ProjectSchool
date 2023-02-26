@@ -14,3 +14,4 @@ CREATE TABLE Course (
     name VARCHAR(20) NOT NULL UNIQUE,
     description VARCHAR(500)
 );
+
