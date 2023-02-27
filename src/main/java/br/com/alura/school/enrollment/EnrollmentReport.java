@@ -1,4 +1,4 @@
-package br.com.alura.school.course;
+package br.com.alura.school.enrollment;
 
 import br.com.alura.school.support.validation.Unique;
 import br.com.alura.school.user.User;

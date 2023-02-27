@@ -1,5 +1,6 @@
 package br.com.alura.school.course;
 
+import br.com.alura.school.enrollment.Enrollment;
 import br.com.alura.school.user.User;
 
 import javax.persistence.*;

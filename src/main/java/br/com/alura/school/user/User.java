@@ -1,6 +1,6 @@
 package br.com.alura.school.user;
 
-import br.com.alura.school.course.Enrollment;
+import br.com.alura.school.enrollment.Enrollment;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.NaturalId;
 import org.hibernate.annotations.NaturalIdCache;

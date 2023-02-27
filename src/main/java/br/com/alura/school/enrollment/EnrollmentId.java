@@ -1,4 +1,4 @@
-package br.com.alura.school.course;
+package br.com.alura.school.enrollment;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
