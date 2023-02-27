@@ -27,10 +27,13 @@ class CourseController {
     private final UserRepository userRepository;
     private final EntityManager entityManager;
 
-    CourseController(CourseRepository courseRepository, UserRepository userRepository, EntityManager entityManager) {
+    private final EnrollmentRepository enrollmentRepository;
+
+    CourseController(CourseRepository courseRepository, UserRepository userRepository, EntityManager entityManager, EnrollmentRepository enrollmentRepository) {
         this.courseRepository = courseRepository;
         this.userRepository = userRepository;
         this.entityManager = entityManager;
+        this.enrollmentRepository = enrollmentRepository;
     }
 
     @GetMapping(value = "/courses")

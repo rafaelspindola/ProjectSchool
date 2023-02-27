@@ -1,5 +1,7 @@
 package br.com.alura.school.course;
 
+import br.com.alura.school.user.User;
+import br.com.alura.school.user.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +10,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.time.Instant;
+import java.util.Date;
 
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -27,6 +32,11 @@ class CourseControllerTest {
     @Autowired
     private CourseRepository courseRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private EnrollmentRepository enrollmentRepository;
 
     @Test
     void should_retrieve_course_by_code() throws Exception {
@@ -68,6 +78,59 @@ class CourseControllerTest {
                 .content(jsonMapper.writeValueAsString(newCourseRequest)))
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", "/courses/java-2"));
+    }
+
+    @Test
+    void should_enroll_student_into_course() throws Exception {
+        userRepository.save(new User("alex","alex@email.com"));
+        courseRepository.save(new Course("java-1", "Java OO", "Java and Object Orientation: Encapsulation, Inheritance and Polymorphism."));
+
+        NewEnrollmentRequest newEnrollmentRequest = new NewEnrollmentRequest("alex","alex@email.com", Date.from(Instant.now()));
+
+        mockMvc.perform(post("/courses/java-1/enroll")
+                .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonMapper.writeValueAsString(newEnrollmentRequest)))
+                .andExpect(status().isCreated());
+    }
+
+    @Test
+    void should_not_enroll_student_because_he_was_not_found() throws Exception {
+        courseRepository.save(new Course("java-1", "Java OO", "Java and Object Orientation: Encapsulation, Inheritance and Polymorphism."));
+
+        NewEnrollmentRequest newEnrollmentRequest = new NewEnrollmentRequest("alex","alex@email.com", Date.from(Instant.now()));
+
+        mockMvc.perform(post("/courses/java-1/enroll")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonMapper.writeValueAsString(newEnrollmentRequest)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void should_not_enroll_student_because_course_was_not_found() throws Exception {
+        userRepository.save(new User("alex","alex@email.com"));
+
+        NewEnrollmentRequest newEnrollmentRequest = new NewEnrollmentRequest("alex","alex@email.com", Date.from(Instant.now()));
+
+        mockMvc.perform(post("/courses/java-1/enroll")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonMapper.writeValueAsString(newEnrollmentRequest)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void should_not_enroll_student_because_he_is_already_enrolled() throws Exception {
+        User user = new User("alex","alex@email.com");
+        userRepository.save(user);
+        Course course = new Course("java-1", "Java OO", "Java and Object Orientation: Encapsulation, Inheritance and Polymorphism.");
+        courseRepository.save(course);
+        enrollmentRepository.save(new Enrollment(course,user));
+        NewEnrollmentRequest newEnrollmentRequest = new NewEnrollmentRequest("alex","alex@email.com", Date.from(Instant.now()));
+
+        mockMvc.perform(post("/courses/java-1/enroll")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonMapper.writeValueAsString(newEnrollmentRequest)))
+                .andExpect(status().isBadRequest());
+
     }
 
 }
