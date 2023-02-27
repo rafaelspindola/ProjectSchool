@@ -6,7 +6,6 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import static javax.persistence.GenerationType.IDENTITY;
@@ -63,25 +62,14 @@ public class Course {
         return id;
     }
 
+    public List<Enrollment> getEnrolledUsers() {
+        return enrolledUsers;
+    }
+
     public void addUser(User user) {
         Enrollment coursesEnrollment = new Enrollment(this, user);
         enrolledUsers.add(coursesEnrollment);
         user.getEnrolledCourses().add(coursesEnrollment);
-    }
-
-    public void removeUser(User user) {
-        for (Iterator<Enrollment> iterator = enrolledUsers.iterator();
-             iterator.hasNext(); ) {
-            Enrollment coursesEnrollment = iterator.next();
-
-            if (coursesEnrollment.getCourse().equals(this) &&
-                    coursesEnrollment.getUser().equals(user)) {
-                iterator.remove();
-                coursesEnrollment.getUser().getEnrolledCourses().remove(coursesEnrollment);
-                coursesEnrollment.setCourse(null);
-                coursesEnrollment.setUser(null);
-            }
-        }
     }
 
     @Override

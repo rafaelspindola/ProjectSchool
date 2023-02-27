@@ -27,6 +27,7 @@ class CourseControllerTest {
     @Autowired
     private CourseRepository courseRepository;
 
+
     @Test
     void should_retrieve_course_by_code() throws Exception {
         courseRepository.save(new Course("java-1", "Java OO", "Java and Object Orientation: Encapsulation, Inheritance and Polymorphism."));
@@ -41,7 +42,7 @@ class CourseControllerTest {
     }
 
     @Test
-    void should_retrieve_all_courses() throws Exception {
+    void    should_retrieve_all_courses() throws Exception {
         courseRepository.save(new Course("spring-1", "Spring Basics", "Spring Core and Spring MVC."));
         courseRepository.save(new Course("spring-2", "Spring Boot", "Spring Boot"));
 

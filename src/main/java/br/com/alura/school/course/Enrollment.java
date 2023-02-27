@@ -12,37 +12,32 @@ public class Enrollment {
 
 
     @EmbeddedId
+    @GeneratedValue
     private EnrollmentId id;
 
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("courseId")
+    @GeneratedValue
+    @ManyToOne(fetch = FetchType.EAGER)
+    @MapsId("course_id")
     private Course course;
 
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("userId")
+    @GeneratedValue
+    @ManyToOne(fetch = FetchType.EAGER)
+    @MapsId("user_id")
     private User user;
-
-    @Column(name = "email", nullable = false, unique = true)
-    private String email;
 
     @Column(name = "enrolled_on")
     private Date enrollmentDate = new Date();
 
-    @Column(name = "number_of_enrollments")
-    private int numberOfEnrollments;
-
     public Enrollment(Course course, User user) {
         this.course = course;
         this.user = user;
+        this.id = new EnrollmentId(course.getId(), user.getId());
     }
 
-    public Enrollment(Course course, User user, String email, int numberOfEnrollments) {
-        this.course = course;
+    public Enrollment(Course course, User user, Date enrollmentDate) {
         this.user = user;
-        this.email = email;
-        this.numberOfEnrollments = numberOfEnrollments;
+        this.course = course;
+        this.enrollmentDate = enrollmentDate;
         this.id = new EnrollmentId(course.getId(), user.getId());
     }
 
@@ -51,6 +46,11 @@ public class Enrollment {
     public EnrollmentId getId() {
         return id;
     }
+
+    public void setId(EnrollmentId id) {
+        this.id = id;
+    }
+
 
     public void setCourse(Course course) {
         this.course = course;
@@ -68,16 +68,8 @@ public class Enrollment {
         return user;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
     public Date getEnrollmentDate() {
         return enrollmentDate;
-    }
-
-    public int getNumberOfEnrollments() {
-        return numberOfEnrollments;
     }
 
     @Override
@@ -96,5 +88,6 @@ public class Enrollment {
     public int hashCode() {
         return Objects.hash(course, user);
     }
+
 }
 

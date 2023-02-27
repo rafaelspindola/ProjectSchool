@@ -48,16 +48,16 @@ public class User {
     @Deprecated
     protected User() {}
 
-    User(String username, String email) {
+    public User(String username, String email) {
         this.username = username;
         this.email = email;
     }
 
-    String getUsername() {
+    public String getUsername() {
         return username;
     }
 
-    String getEmail() {
+    public String getEmail() {
         return email;
     }
 
@@ -67,10 +67,6 @@ public class User {
 
     public List<Enrollment> getEnrolledCourses() {
         return enrolledCourses;
-    }
-
-    public void setEnrolledCourses(List<Enrollment> enrolledCourses) {
-        this.enrolledCourses = enrolledCourses;
     }
 
     @Override
