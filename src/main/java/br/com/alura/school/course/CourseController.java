@@ -11,6 +11,8 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.persistence.EntityManager;
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,6 +50,23 @@ class CourseController {
         Course course = courseRepository.findByCode(code).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, format("Course with code %s not found", code)));
         return ResponseEntity.ok(new CourseResponse(course));
     }
+
+    @GetMapping(value = "/courses/enroll/report", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<EnrollmentReport>> enrollmentReport() {
+        List<User> enrolledUsers = userRepository.findByEnrolledCoursesIsNotEmpty();
+
+        List<EnrollmentReport> enrollmentQuantity = new ArrayList<>();
+        for (User user : enrolledUsers) {
+            int count = user.getEnrolledCourses().size();
+            enrollmentQuantity.add(new EnrollmentReport(user.getUsername(), count,user.getEmail()));
+        }
+        List<EnrollmentReport> sortedQuantity = enrollmentQuantity.stream()
+                .sorted(Comparator.comparingInt(EnrollmentReport::getEnrollmentCount)
+                        .reversed()).collect(Collectors.toList());
+
+        return ResponseEntity.ok(sortedQuantity);
+    }
+
 
     @PostMapping("/courses")
     ResponseEntity<Void> newCourse(@RequestBody @Valid NewCourseRequest newCourseRequest) {
