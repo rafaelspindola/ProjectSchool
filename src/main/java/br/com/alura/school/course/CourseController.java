@@ -60,12 +60,14 @@ class CourseController {
     ResponseEntity<Void> newEnroll(@PathVariable("code") String code, @RequestBody @Valid NewEnrollmentRequest newEnrollmentRequest) throws Exception {
         User user = userRepository.findByUsername(newEnrollmentRequest.getUsername()).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "User not found"));
         Course course = courseRepository.findByCode(code).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, format("Course with code %s not found", code)));
-        course.addUser(user);
-        if (course.getEnrolledUsers().contains(user)) {
+        Enrollment enrollment = new Enrollment(course,user);
+        if (course.getEnrolledUsers().contains(enrollment)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        } else {
+            course.addUser(user);
+            entityManager.clear();
+            courseRepository.save(course);
         }
-        entityManager.clear();
-        courseRepository.save(course);
         return ResponseEntity.status(CREATED).build();
     }
 }
