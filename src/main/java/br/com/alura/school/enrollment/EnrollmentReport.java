@@ -10,16 +10,11 @@ public class EnrollmentReport {
     @JsonProperty
     private String email;
     @JsonProperty
-    private int enrollmentCount;
+    private int quantidade_matriculas;
 
-    @Unique(entity = User.class, field = "username")
-    @JsonProperty
-    private String username;
-
-    public EnrollmentReport(String username, int enrollmentCount, String email) {
+    public EnrollmentReport(int quantidade_matriculas, String email) {
         this.email = email;
-        this.enrollmentCount = enrollmentCount;
-        this.username = username;
+        this.quantidade_matriculas = quantidade_matriculas;
     }
 
     public String getEmail() {
@@ -30,19 +25,11 @@ public class EnrollmentReport {
         this.email = email;
     }
 
-    public int getEnrollmentCount() {
-        return enrollmentCount;
+    public int getQuantidade_matriculas() {
+        return quantidade_matriculas;
     }
 
-    public void setEnrollmentCount(int enrollmentCount) {
-        this.enrollmentCount = enrollmentCount;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
+    public void setQuantidade_matriculas(int quantidade_matriculas) {
+        this.quantidade_matriculas = quantidade_matriculas;
     }
 }

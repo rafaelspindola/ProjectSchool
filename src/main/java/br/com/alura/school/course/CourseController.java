@@ -15,14 +15,12 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.persistence.EntityManager;
 import javax.validation.Valid;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
-import static org.springframework.http.HttpStatus.CREATED;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.HttpStatus.*;
 
 
 @RestController
@@ -57,18 +55,11 @@ class CourseController {
 
     @GetMapping(value = "/courses/enroll/report", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<EnrollmentReport>> enrollmentReport() {
-        List<User> enrolledUsers = userRepository.findByEnrolledCoursesIsNotEmpty();
+        List<EnrollmentReport> enrollmentQuantity = userRepository.findByEnrolledCoursesIsNotEmpty().stream()
+                .map(user -> new EnrollmentReport(user.getEnrolledCourses().size(),user.getEmail()))
+                .sorted(Comparator.comparingInt(EnrollmentReport::getQuantidade_matriculas).reversed()).collect(Collectors.toList());
 
-        List<EnrollmentReport> enrollmentQuantity = new ArrayList<>();
-        for (User user : enrolledUsers) {
-            int count = user.getEnrolledCourses().size();
-            enrollmentQuantity.add(new EnrollmentReport(user.getUsername(), count,user.getEmail()));
-        }
-        List<EnrollmentReport> sortedQuantity = enrollmentQuantity.stream()
-                .sorted(Comparator.comparingInt(EnrollmentReport::getEnrollmentCount)
-                        .reversed()).collect(Collectors.toList());
-
-        return ResponseEntity.ok(sortedQuantity);
+        return enrollmentQuantity.isEmpty() ? ResponseEntity.status(NO_CONTENT).build() : ResponseEntity.ok(enrollmentQuantity);
     }
 
 
@@ -82,15 +73,13 @@ class CourseController {
     @PostMapping(value = "/courses/{code}/enroll", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<Void> newEnroll(@PathVariable("code") String code, @RequestBody @Valid NewEnrollmentRequest newEnrollmentRequest) throws Exception {
         User user = userRepository.findByUsername(newEnrollmentRequest.getUsername()).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "User not found"));
-        Course course = courseRepository.findByCode(code).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, format("Course with code %s not found", code)));
-        Enrollment enrollment = new Enrollment(course,user);
-        if (course.getEnrolledUsers().contains(enrollment)) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        } else {
+        Course course = courseRepository.findByCode(code).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Course not found"));
+        if (course.getEnrolledUsers().contains(new Enrollment(course, user))) {
+            throw new ResponseStatusException(BAD_REQUEST, "User is already enrolled in the course");
+        }
             course.addUser(user);
             entityManager.clear();
             courseRepository.save(course);
-        }
         return ResponseEntity.status(CREATED).build();
     }
 }
