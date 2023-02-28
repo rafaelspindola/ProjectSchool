@@ -7,6 +7,7 @@ import br.com.alura.school.user.User;
 import br.com.alura.school.user.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -42,6 +43,8 @@ class CourseControllerTest {
     @Autowired
     private EnrollmentRepository enrollmentRepository;
 
+    // Esse método foi adicionado porque os métodos relativos à requisição POST da matrícula passam individualmente, mas não quando toda a bateria de testes é executada,
+    // indicando que pode haver uma interferência dos outros testes por modificarem os mesmos dados (usuário, curso e matrícula)
     @AfterEach
     public void clearDatabase() {
         enrollmentRepository.deleteAll();
@@ -91,12 +94,13 @@ class CourseControllerTest {
                 .andExpect(header().string("Location", "/courses/java-2"));
     }
 
+    @DisplayName("Esse teste deve matricular um estudante em um curso")
     @Test
     void should_enroll_student_into_course() throws Exception {
         userRepository.save(new User("alex","alex@email.com"));
         courseRepository.save(new Course("java-1", "Java OO", "Java and Object Orientation: Encapsulation, Inheritance and Polymorphism."));
 
-        NewEnrollmentRequest newEnrollmentRequest = new NewEnrollmentRequest("alex","alex@email.com", Date.from(Instant.now()));
+        NewEnrollmentRequest newEnrollmentRequest = new NewEnrollmentRequest("alex", Date.from(Instant.now()));
 
         mockMvc.perform(post("/courses/java-1/enroll")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -104,11 +108,32 @@ class CourseControllerTest {
                 .andExpect(status().isCreated());
     }
 
+    @DisplayName("Esse teste deve matricular um estudante em vários cursos")
     @Test
-    void should_not_enroll_student_because_he_was_not_found() throws Exception {
+    void should_enroll_student_into_multiple_courses() throws Exception {
+        userRepository.save(new User("alex","alex@email.com"));
+        courseRepository.save(new Course("java-1", "Java OO", "Java and Object Orientation: Encapsulation, Inheritance and Polymorphism."));
+        courseRepository.save(new Course("spring-2", "Spring Boot", "Spring Boot"));
+
+        NewEnrollmentRequest newEnrollmentRequest = new NewEnrollmentRequest("alex", Date.from(Instant.now()));
+
+        mockMvc.perform(post("/courses/java-1/enroll")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonMapper.writeValueAsString(newEnrollmentRequest)))
+                .andExpect(status().isCreated());
+
+        mockMvc.perform(post("/courses/spring-2/enroll")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonMapper.writeValueAsString(newEnrollmentRequest)))
+                .andExpect(status().isCreated());
+    }
+
+    @DisplayName("Esse método não deve matricular um estudante por não achá-lo")
+    @Test
+    void should_not_enroll_student_because_student_was_not_found() throws Exception {
         courseRepository.save(new Course("java-1", "Java OO", "Java and Object Orientation: Encapsulation, Inheritance and Polymorphism."));
 
-        NewEnrollmentRequest newEnrollmentRequest = new NewEnrollmentRequest("alex","alex@email.com", Date.from(Instant.now()));
+        NewEnrollmentRequest newEnrollmentRequest = new NewEnrollmentRequest("alex", Date.from(Instant.now()));
 
         mockMvc.perform(post("/courses/java-1/enroll")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -116,11 +141,12 @@ class CourseControllerTest {
                 .andExpect(status().isNotFound());
     }
 
+    @DisplayName("Esse método não deve matricular um estudante porque o curso não foi achado")
     @Test
     void should_not_enroll_student_because_course_was_not_found() throws Exception {
         userRepository.save(new User("alex","alex@email.com"));
 
-        NewEnrollmentRequest newEnrollmentRequest = new NewEnrollmentRequest("alex","alex@email.com", Date.from(Instant.now()));
+        NewEnrollmentRequest newEnrollmentRequest = new NewEnrollmentRequest("alex", Date.from(Instant.now()));
 
         mockMvc.perform(post("/courses/java-1/enroll")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -128,6 +154,7 @@ class CourseControllerTest {
                 .andExpect(status().isNotFound());
     }
 
+    @DisplayName("Esse teste não deve matricular um estudante porque ele já está matriculado")
     @Test
     void should_not_enroll_student_because_he_is_already_enrolled() throws Exception {
         User user = new User("alex","alex@email.com");
@@ -135,7 +162,7 @@ class CourseControllerTest {
         Course course = new Course("java-1", "Java OO", "Java and Object Orientation: Encapsulation, Inheritance and Polymorphism.");
         courseRepository.save(course);
         enrollmentRepository.save(new Enrollment(course,user));
-        NewEnrollmentRequest newEnrollmentRequest = new NewEnrollmentRequest("alex","alex@email.com", Date.from(Instant.now()));
+        NewEnrollmentRequest newEnrollmentRequest = new NewEnrollmentRequest("alex", Date.from(Instant.now()));
 
         mockMvc.perform(post("/courses/java-1/enroll")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -144,6 +171,7 @@ class CourseControllerTest {
 
     }
 
+    @DisplayName("Esse método deve retornar o relatório de matrículas")
     @Test
     void should_retrieve_enrollment_report() throws Exception {
         User user1 = new User("alex","alex@email.com");
@@ -169,6 +197,7 @@ class CourseControllerTest {
                 .andExpect(jsonPath("$[1].email", is("ana@email.com")));
     }
 
+    @DisplayName("Esse método não deve retornar o relatório de matrículas porque não há nada para ser retornado")
     @Test
     void should_return_no_content_exception_because_there_are_no_enrolled_students() throws Exception {
         User user1 = new User("alex","alex@email.com");
