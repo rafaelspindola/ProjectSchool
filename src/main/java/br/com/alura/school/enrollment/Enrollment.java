@@ -2,6 +2,7 @@ package br.com.alura.school.enrollment;
 
 import br.com.alura.school.course.Course;
 import br.com.alura.school.user.User;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -16,17 +17,16 @@ public class Enrollment {
     @GeneratedValue
     private EnrollmentId id;
 
-    @GeneratedValue
     @ManyToOne(fetch = FetchType.EAGER)
     @MapsId("course_id")
     private Course course;
 
-    @GeneratedValue
     @ManyToOne(fetch = FetchType.EAGER)
     @MapsId("user_id")
     private User user;
 
     @Column(name = "enrolled_on")
+    @DateTimeFormat
     private Date enrollmentDate = new Date();
 
     public Enrollment(Course course, User user) {

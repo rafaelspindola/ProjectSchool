@@ -6,6 +6,7 @@ import br.com.alura.school.enrollment.NewEnrollmentRequest;
 import br.com.alura.school.user.User;
 import br.com.alura.school.user.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -40,6 +41,13 @@ class CourseControllerTest {
 
     @Autowired
     private EnrollmentRepository enrollmentRepository;
+
+    @AfterEach
+    public void clearDatabase() {
+        enrollmentRepository.deleteAll();
+        courseRepository.deleteAll();
+        userRepository.deleteAll();
+    }
 
     @Test
     void should_retrieve_course_by_code() throws Exception {
