@@ -5,6 +5,7 @@ import javax.persistence.Embeddable;
 import java.io.Serializable;
 import java.util.Objects;
 
+// Tendo em vista a relação many to many entre as entidades user e course, essa classe foi criada para representar a chave primária composta que se refere a ambos
 @Embeddable
 public class EnrollmentId
         implements Serializable {

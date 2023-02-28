@@ -53,13 +53,14 @@ class CourseController {
         return ResponseEntity.ok(new CourseResponse(course));
     }
 
+    // Esse método foi criado para gerar o relatório de matrículas
     @GetMapping(value = "/courses/enroll/report", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<EnrollmentReport>> enrollmentReport() {
-        List<EnrollmentReport> enrollmentQuantity = userRepository.findByEnrolledCoursesIsNotEmpty().stream()
-                .map(user -> new EnrollmentReport(user.getEnrolledCourses().size(),user.getEmail()))
-                .sorted(Comparator.comparingInt(EnrollmentReport::getQuantidade_matriculas).reversed()).collect(Collectors.toList());
+        List<EnrollmentReport> report = userRepository.findByEnrolledCoursesIsNotEmpty().stream() // cria uma lista de objetos do relatório relacionados aos usuários que tem ao menos uma matrícula
+                .map(user -> new EnrollmentReport(user.getEnrolledCourses().size(),user.getEmail())) // cria uma stream (sequência de objetos) e mapeia cada usuário a um objeto que contém a quantidade de matrículas do usuário e seu email
+                .sorted(Comparator.comparingInt(EnrollmentReport::getQuantidade_matriculas).reversed()).collect(Collectors.toList()); // a lista é ordenada comparando os valores int da quantidade de matrículas e gera a lista final do relatório
 
-        return enrollmentQuantity.isEmpty() ? ResponseEntity.status(NO_CONTENT).build() : ResponseEntity.ok(enrollmentQuantity);
+        return report.isEmpty() ? ResponseEntity.status(NO_CONTENT).build() : ResponseEntity.ok(report); // uso de operador ternário para retornar status 204 caso não haja relatório a ser produzido, caso contrário retornar o relatório
     }
 
 
@@ -70,16 +71,17 @@ class CourseController {
         return ResponseEntity.created(location).build();
     }
 
+    // Esse método foi criado para criar as matrículas
     @PostMapping(value = "/courses/{code}/enroll", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<Void> newEnroll(@PathVariable("code") String code, @RequestBody @Valid NewEnrollmentRequest newEnrollmentRequest) throws Exception {
-        User user = userRepository.findByUsername(newEnrollmentRequest.getUsername()).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "User not found"));
-        Course course = courseRepository.findByCode(code).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Course not found"));
-        if (course.getEnrolledUsers().contains(new Enrollment(course, user))) {
-            throw new ResponseStatusException(BAD_REQUEST, "User is already enrolled in the course");
+        User user = userRepository.findByUsername(newEnrollmentRequest.getUsername()).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "User not found")); // procura um usuário pelo seu nome, caso contrário retorna exceção
+        Course course = courseRepository.findByCode(code).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Course not found")); // procura um curso pelo código, caso contrário retorna exceção
+        if (course.getEnrolledUsers().contains(new Enrollment(course, user))) { // procura na lista de estudantes matriculados do curso se o estudante já está matriculado
+            throw new ResponseStatusException(BAD_REQUEST, "User is already enrolled in the course"); // impede uma nova matrícula e retorna exceção, caso esteja matriculado
         }
-            course.addUser(user);
-            entityManager.clear();
-            courseRepository.save(course);
-        return ResponseEntity.status(CREATED).build();
+            course.addUser(user); // realiza a matrícula, adicionando o usuário ao curso
+            entityManager.clear(); // essa função foi adicionada pelo aplicativo apresentar problemas de cache no banco de dados em memória e dar erro 500 ao realizar a matrícula
+            courseRepository.save(course); // salva a matrícula
+        return ResponseEntity.status(CREATED).build(); // retorna o status de matrícula criada
     }
 }

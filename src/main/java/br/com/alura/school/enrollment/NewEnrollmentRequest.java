@@ -9,6 +9,7 @@ import javax.validation.constraints.Size;
 import java.time.Instant;
 import java.util.Date;
 
+// Essa classe foi criada para gerar o requerimento necessário para criar uma nova matrícula
 public class NewEnrollmentRequest {
 
     @Size(max=20)
