@@ -136,4 +136,39 @@ class CourseControllerTest {
 
     }
 
+    @Test
+    void should_retrieve_enrollment_report() throws Exception {
+        User user1 = new User("alex","alex@email.com");
+        User user2 = new User("ana","ana@email.com");
+        userRepository.save(user1);
+        userRepository.save(user2);
+        Course course1 = new Course("java-1", "Java OO", "Java and Object Orientation: Encapsulation, Inheritance and Polymorphism.");
+        Course course2 = new Course("java-2", "Java Collections", "Java Collections: Lists, Sets, Maps and more.");
+        courseRepository.save(course1);
+        courseRepository.save(course2);
+        enrollmentRepository.save(new Enrollment(course1,user1));
+        enrollmentRepository.save(new Enrollment(course2,user1));
+        enrollmentRepository.save(new Enrollment(course1,user2));
+
+        mockMvc.perform(get("/courses/enroll/report")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.length()", is(2)))
+                .andExpect(jsonPath("$[0].quantidade_matriculas", is(2)))
+                .andExpect(jsonPath("$[0].email", is("alex@email.com")))
+                .andExpect(jsonPath("$[1].quantidade_matriculas", is(1)))
+                .andExpect(jsonPath("$[1].email", is("ana@email.com")));
+    }
+
+    @Test
+    void should_return_no_content_exception_because_there_are_no_enrolled_students() throws Exception {
+        User user1 = new User("alex","alex@email.com");
+        User user2 = new User("ana","ana@email.com");
+
+        mockMvc.perform(get("/courses/enroll/report")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+    }
+
 }
