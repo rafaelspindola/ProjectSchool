@@ -9,6 +9,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -67,8 +69,16 @@ class CourseControllerTest {
                 .andExpect(jsonPath("$.shortDescription", is("Java and O...")));
     }
 
+    @DisplayName("This test shouldn't find a course because it doesn't exists")
     @Test
-    void    should_retrieve_all_courses() throws Exception {
+    void not_found_when_course_does_not_exist() throws Exception {
+        mockMvc.perform(get("/courses/java-3")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void should_retrieve_all_courses() throws Exception {
         courseRepository.save(new Course("spring-1", "Spring Basics", "Spring Core and Spring MVC."));
         courseRepository.save(new Course("spring-2", "Spring Boot", "Spring Boot"));
 
@@ -86,6 +96,13 @@ class CourseControllerTest {
     }
 
     @Test
+    void no_content_when_there_are_no_courses_to_retrieve() throws Exception {
+        mockMvc.perform(get("/courses")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
     void should_add_new_course() throws Exception {
         NewCourseRequest newCourseRequest = new NewCourseRequest("java-2", "Java Collections", "Java Collections: Lists, Sets, Maps and more.");
 
@@ -94,6 +111,26 @@ class CourseControllerTest {
                 .content(jsonMapper.writeValueAsString(newCourseRequest)))
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", "/courses/java-2"));
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+            ", Java: Collections, ABCD",
+            "'', Java: Collections, ABCD",
+            "'    ', Java: Collections, ABCD",
+            "java-2, , ABCD",
+            "java-2, '', ABCD",
+            "java-2, '    ', ABCD",
+            "a-course-code-that-is-really-really-big , maria@email.com, ABCD",
+            "java-2, a-course-name-that-is-really-really-big, ABCD"
+    })
+    void should_validate_bad_course_requests(String code, String name, String descriptions) throws Exception {
+        NewCourseRequest newUser = new NewCourseRequest(code,name, descriptions);
+
+        mockMvc.perform(post("/courses")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonMapper.writeValueAsString(newUser)))
+                .andExpect(status().isBadRequest());
     }
 
     @DisplayName("This test should enroll a student into a course")

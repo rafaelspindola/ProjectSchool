@@ -7,7 +7,6 @@ import br.com.alura.school.user.User;
 import br.com.alura.school.user.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -44,7 +43,7 @@ class CourseController {
     /*
        This method was refactored due to problems with a test method, which was the first problem of this technical challenge.
        The first line retrieves all courses in the database.
-       Afterwards it transforms each course object into a courseReponse object, mapping them and creating a list.
+       Afterwards it transforms each course object into a courseResponse object, mapping them and creating a list.
        Finally, it returns this list and a response status ok 200
      */
     @GetMapping(value = "/courses")
@@ -52,7 +51,7 @@ class CourseController {
         List<Course> courses = courseRepository.findAll();
         LOGGER.info("There has been made a request to search all existing courses. Number of courses found = {}", courses.size());
         List<CourseResponse> courseResponses = courses.stream().map(CourseResponse::new).collect(Collectors.toList());
-        return new ResponseEntity<>(courseResponses, HttpStatus.OK);
+        return courseResponses.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(courseResponses);
     }
 
     @GetMapping("/courses/{code}")
