@@ -123,7 +123,7 @@ Dez testes foram adicionados para essa funcionalidade. Foi criado um EnrollmentR
 
 ![teste 10](https://user-images.githubusercontent.com/108681887/222182772-c24e5854-83e5-4180-8cd2-11ef481e4678.PNG)
 
-**O oitavo testa exceções relacionadas a validações como @NotBlack e limite de caracteres de input:**
+**O oitavo testa exceções relacionadas a validações como @NotBlank e limite de caracteres de input:**
 
 ![teste 11](https://user-images.githubusercontent.com/108681887/222183198-77970bab-108e-4d33-b569-9182cf5999e9.PNG)
 
