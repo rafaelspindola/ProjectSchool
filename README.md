@@ -16,6 +16,7 @@ cd ProjectSchoolAlura
 
 A ideia é simular o sistema de uma escola com cursos e alunos. É possível adicionar alunos ao sistema ou achá-los pelo nome de usuário.
 Além disso, também é possível adicionar cursos ao sistema, listar todos os cursos disponíveis e procurar um curso específico pelo seu código. 
+Essas funcionalidades já haviam sido implementadas antes do início do desafio técnico.
 O desafio requerido pela Alura foi:
 1. Ajustar o teste da funcionalidade GET de listar todos os cursos, que revelou um bug no código de requisição do controller;
 2. Criar uma requisição POST para realizar a matrícula de um aluno em uma disciplina;
