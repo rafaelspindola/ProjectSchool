@@ -61,7 +61,7 @@ Tendo em vista que provavelmente é um problema de cache no banco de dados em me
 
 ### 2.1 - Testes para a funcionalidade de matrícula
 
-Cinco testes foram adicionados para essa funcionalidade. Foi criado um EnrollmentRepository para ajudar no processo de testagem.
+Dez testes foram adicionados para essa funcionalidade. Foi criado um EnrollmentRepository para ajudar no processo de testagem.
 
 **O primeiro testa a matrícula de um indivíduo em um curso:**
 
@@ -82,6 +82,26 @@ Cinco testes foram adicionados para essa funcionalidade. Foi criado um Enrollmen
 **O quinto testa o impedimento da matrícula pelo estudante já estar matriculado:**
 
 ![teste 5](https://user-images.githubusercontent.com/108681887/222064703-0849ad6c-6036-4852-84e0-520650ff67aa.PNG)
+
+**O sexto retorna exceção 404 quando o curso não existe:**
+
+![teste 9](https://user-images.githubusercontent.com/108681887/222182328-200497e6-0657-4031-954e-eb4830a61d4b.PNG)
+
+**O sétimo retorna exceção 204 quando não há lista de cursos no banco de dados:**
+
+![teste 10](https://user-images.githubusercontent.com/108681887/222182772-c24e5854-83e5-4180-8cd2-11ef481e4678.PNG)
+
+**O oitavo testa exceções relacionadas a validações como @NotBlack e limite de caracteres de input:**
+
+![teste 11](https://user-images.githubusercontent.com/108681887/222183198-77970bab-108e-4d33-b569-9182cf5999e9.PNG)
+
+**O nono impede a duplicação de cursos com código duplo:** 
+
+![teste12](https://user-images.githubusercontent.com/108681887/222183581-da369db8-f31f-4873-bee1-a778eab746c9.PNG)
+
+**O décimo impede a duplicação de cursos com nome duplo:** 
+
+![teste 13](https://user-images.githubusercontent.com/108681887/222183758-a715f16e-4308-4c48-9eb1-f27831a9ee27.PNG)
 
 ## 3 - Implementar relatório de matrículas
 
