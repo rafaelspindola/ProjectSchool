@@ -140,7 +140,6 @@ class CourseControllerTest {
     @Test
     void should_not_allow_duplication_of_course_code() throws Exception {
         courseRepository.save(new Course("java-1", "Java OO", "Java and Object Orientation: Encapsulation, Inheritance and Polymorphism."));
-
         NewCourseRequest newCourse = new NewCourseRequest("java-1", "Java-01","Java and Object Orientation: Encapsulation, Inheritance and Polymorphism.");
 
         mockMvc.perform(post("/courses")
