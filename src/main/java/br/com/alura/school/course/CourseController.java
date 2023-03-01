@@ -2,7 +2,6 @@ package br.com.alura.school.course;
 
 import br.com.alura.school.enrollment.Enrollment;
 import br.com.alura.school.enrollment.EnrollmentReport;
-import br.com.alura.school.enrollment.EnrollmentRepository;
 import br.com.alura.school.enrollment.NewEnrollmentRequest;
 import br.com.alura.school.user.User;
 import br.com.alura.school.user.UserRepository;
@@ -34,13 +33,11 @@ class CourseController {
     private final UserRepository userRepository;
     private final EntityManager entityManager;
 
-    private final EnrollmentRepository enrollmentRepository;
 
-    CourseController(CourseRepository courseRepository, UserRepository userRepository, EntityManager entityManager, EnrollmentRepository enrollmentRepository) {
+    CourseController(CourseRepository courseRepository, UserRepository userRepository, EntityManager entityManager) {
         this.courseRepository = courseRepository;
         this.userRepository = userRepository;
         this.entityManager = entityManager;
-        this.enrollmentRepository = enrollmentRepository;
     }
 
 
