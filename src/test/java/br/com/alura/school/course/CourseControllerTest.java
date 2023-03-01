@@ -24,6 +24,7 @@ import java.util.Date;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -95,6 +96,7 @@ class CourseControllerTest {
                 .andExpect(jsonPath("$[1].shortDescription", is("Spring Boot")));
     }
 
+    @DisplayName("This test shouldn't return any courses")
     @Test
     void no_content_when_there_are_no_courses_to_retrieve() throws Exception {
         mockMvc.perform(get("/courses")
@@ -113,6 +115,7 @@ class CourseControllerTest {
                 .andExpect(header().string("Location", "/courses/java-2"));
     }
 
+    @DisplayName("This test should validate bad course requests")
     @ParameterizedTest
     @CsvSource({
             ", Java: Collections, ABCD",
@@ -125,11 +128,39 @@ class CourseControllerTest {
             "java-2, a-course-name-that-is-really-really-big, ABCD"
     })
     void should_validate_bad_course_requests(String code, String name, String descriptions) throws Exception {
-        NewCourseRequest newUser = new NewCourseRequest(code,name, descriptions);
+        NewCourseRequest newCourse = new NewCourseRequest(code,name, descriptions);
 
         mockMvc.perform(post("/courses")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonMapper.writeValueAsString(newUser)))
+                        .content(jsonMapper.writeValueAsString(newCourse)))
+                .andExpect(status().isBadRequest());
+    }
+
+    @DisplayName("This test should not allow duplicated course codes")
+    @Test
+    void should_not_allow_duplication_of_course_code() throws Exception {
+        courseRepository.save(new Course("java-1", "Java OO", "Java and Object Orientation: Encapsulation, Inheritance and Polymorphism."));
+
+        NewCourseRequest newCourse = new NewCourseRequest("java-1", "Java-01","Java and Object Orientation: Encapsulation, Inheritance and Polymorphism.");
+
+        mockMvc.perform(post("/courses")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonMapper.writeValueAsString(newCourse)))
+                .andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @DisplayName("This test should not allow duplicated course names")
+    @Test
+    void should_not_allow_duplication_of_course_name() throws Exception {
+        courseRepository.save(new Course("java-1", "Java OO", "Java and Object Orientation: Encapsulation, Inheritance and Polymorphism."));
+
+        NewCourseRequest newCourse = new NewCourseRequest("java-2", "Java OO","Java and Object Orientation: Encapsulation, Inheritance and Polymorphism.");
+
+        mockMvc.perform(post("/courses")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(jsonMapper.writeValueAsString(newCourse)))
+                .andDo(print())
                 .andExpect(status().isBadRequest());
     }
 
