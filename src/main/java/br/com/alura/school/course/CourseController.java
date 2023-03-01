@@ -6,6 +6,8 @@ import br.com.alura.school.enrollment.EnrollmentRepository;
 import br.com.alura.school.enrollment.NewEnrollmentRequest;
 import br.com.alura.school.user.User;
 import br.com.alura.school.user.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -26,6 +28,7 @@ import static org.springframework.http.HttpStatus.*;
 @RestController
 class CourseController {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(CourseController.class);
     private final CourseRepository courseRepository;
 
     private final UserRepository userRepository;
@@ -40,9 +43,17 @@ class CourseController {
         this.enrollmentRepository = enrollmentRepository;
     }
 
+
+    /*
+       This method was refactored due to problems with a test method, which was the first problem of this technical challenge.
+       The first line retrieves all courses in the database.
+       Afterwards it transforms each course object into a courseReponse object, mapping them and creating a list.
+       Finally, it returns this list and a response status ok 200
+     */
     @GetMapping(value = "/courses")
     ResponseEntity<List<CourseResponse>> allCourses() {
         List<Course> courses = courseRepository.findAll();
+        LOGGER.info("There has been made a request to search all existing courses. Number of courses found = {}", courses.size());
         List<CourseResponse> courseResponses = courses.stream().map(CourseResponse::new).collect(Collectors.toList());
         return new ResponseEntity<>(courseResponses, HttpStatus.OK);
     }
@@ -53,14 +64,21 @@ class CourseController {
         return ResponseEntity.ok(new CourseResponse(course));
     }
 
-    // Esse método foi criado para gerar o relatório de matrículas
+    /*
+       This method was created to produce a report of all students who have at least one enrollment and ordering the list by descending values.
+       First it retrieves all users that have enrolled in at least one course.
+       Then it stream of objects, mapping each user to an object that contains the number of enrollments an user has and it's email.
+       This collection of objects is then sorted by descending int values, generating an enrollment report in the end.
+       Finally, the ternary operator returns status 204 no content if there is no report to retrieve, otherwise it returns status 200 ok.
+     */
     @GetMapping(value = "/courses/enroll/report", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<EnrollmentReport>> enrollmentReport() {
-        List<EnrollmentReport> report = userRepository.findByEnrolledCoursesIsNotEmpty().stream() // cria uma lista de objetos do relatório relacionados aos usuários que tem ao menos uma matrícula
-                .map(user -> new EnrollmentReport(user.getEnrolledCourses().size(),user.getEmail())) // cria uma stream (sequência de objetos) e mapeia cada usuário a um objeto que contém a quantidade de matrículas do usuário e seu email
-                .sorted(Comparator.comparingInt(EnrollmentReport::getQuantidade_matriculas).reversed()).collect(Collectors.toList()); // a lista é ordenada comparando os valores int da quantidade de matrículas e gera a lista final do relatório
+        List<EnrollmentReport> report = userRepository.findByEnrolledCoursesIsNotEmpty().stream()
+                .map(user -> new EnrollmentReport(user.getEnrolledCourses().size(),user.getEmail()))
+                .sorted(Comparator.comparingInt(EnrollmentReport::getQuantidade_matriculas).reversed()).collect(Collectors.toList());
+        LOGGER.info("There has been made a request to search all students who have at least one enroll and sort them by a descending order.");
 
-        return report.isEmpty() ? ResponseEntity.status(NO_CONTENT).build() : ResponseEntity.ok(report); // uso de operador ternário para retornar status 204 caso não haja relatório a ser produzido, caso contrário retornar o relatório
+        return report.isEmpty() ? ResponseEntity.status(NO_CONTENT).build() : ResponseEntity.ok(report);
     }
 
 
@@ -71,17 +89,27 @@ class CourseController {
         return ResponseEntity.created(location).build();
     }
 
-    // Esse método foi criado para criar as matrículas
+    /*
+       This method was created to enroll a student into a course.
+       First it retrieves an user by it's username, or else it throws status 404 not found.
+       Second, it retrieves a course by it's code, otherwise it throws status 404 not found.
+       Then it checks if the user has already enrolled into the same course. If that is the case, it blocks another enrollment and throws status 400 bad request.
+       If the user wasn't enrolled, adds the user to the course and saves the enroll into the database returning a status 201 created.
+       P.S: the entityManager.clear() function was necessary because there were problems with the in-memory cache.
+     */
     @PostMapping(value = "/courses/{code}/enroll", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<Void> newEnroll(@PathVariable("code") String code, @RequestBody @Valid NewEnrollmentRequest newEnrollmentRequest) throws Exception {
-        User user = userRepository.findByUsername(newEnrollmentRequest.getUsername()).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "User not found")); // procura um usuário pelo seu nome, caso contrário retorna exceção
-        Course course = courseRepository.findByCode(code).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Course not found")); // procura um curso pelo código, caso contrário retorna exceção
-        if (course.getEnrolledUsers().contains(new Enrollment(course, user))) { // procura na lista de estudantes matriculados do curso se o estudante já está matriculado
-            throw new ResponseStatusException(BAD_REQUEST, "User is already enrolled in the course"); // impede uma nova matrícula e retorna exceção, caso esteja matriculado
+        User user = userRepository.findByUsername(newEnrollmentRequest.getUsername()).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "User not found"));
+        LOGGER.info("There has been a request to find aa user by it's username, otherwise it should return status 404");
+        Course course = courseRepository.findByCode(code).orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Course not found"));
+        LOGGER.info("There has been a request to find a course by it's code, otherwise it should return status 404");
+        if (course.getEnrolledUsers().contains(new Enrollment(course, user))) {
+            throw new ResponseStatusException(BAD_REQUEST, "User is already enrolled in the course");
         }
-            course.addUser(user); // realiza a matrícula, adicionando o usuário ao curso
-            entityManager.clear(); // essa função foi adicionada pelo aplicativo apresentar problemas de cache no banco de dados em memória e dar erro 500 ao realizar a matrícula
-            courseRepository.save(course); // salva a matrícula
-        return ResponseEntity.status(CREATED).build(); // retorna o status de matrícula criada
+        course.addUser(user);
+        entityManager.clear();
+        courseRepository.save(course);
+        LOGGER.info("Enrollment accomplished.");
+        return ResponseEntity.status(CREATED).build();
     }
 }

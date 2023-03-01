@@ -9,7 +9,7 @@ import javax.validation.constraints.Size;
 import java.time.Instant;
 import java.util.Date;
 
-// Essa classe foi criada para gerar o requerimento necessário para criar uma nova matrícula
+// This class was created to generate the enrollment request
 public class NewEnrollmentRequest {
 
     @Size(max=20)
@@ -18,7 +18,7 @@ public class NewEnrollmentRequest {
     private String username;
 
     @JsonProperty
-    private Date enrollmentDate;
+    private Date enrollmentDate = Date.from(Instant.now());
 
     public NewEnrollmentRequest(String username, Date enrollmentDate) {
         this.username = username;

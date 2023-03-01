@@ -4,7 +4,7 @@ import br.com.alura.school.support.validation.Unique;
 import br.com.alura.school.user.User;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-// Essa classe foi criada para gerar o relatório de matrículas
+// This class was created to generate the enrollment report
 public class EnrollmentReport {
 
     @Unique(entity = User.class, field = "email")

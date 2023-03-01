@@ -43,8 +43,10 @@ class CourseControllerTest {
     @Autowired
     private EnrollmentRepository enrollmentRepository;
 
-    // Esse método foi adicionado porque os métodos relativos à requisição POST da matrícula passam individualmente, mas não quando toda a bateria de testes é executada,
-    // indicando que pode haver uma interferência dos outros testes por modificarem os mesmos dados (usuário, curso e matrícula)
+    /*
+       This method was added because there were some tests that weren't passing as a whole (although they did pass as a solo test).
+       It probably means the other tests are modifying the same data they rely on, so I cleaned the data after each test performed.
+     */
     @AfterEach
     public void clearDatabase() {
         enrollmentRepository.deleteAll();
@@ -94,7 +96,7 @@ class CourseControllerTest {
                 .andExpect(header().string("Location", "/courses/java-2"));
     }
 
-    @DisplayName("Esse teste deve matricular um estudante em um curso")
+    @DisplayName("This test should enroll a student into a course")
     @Test
     void should_enroll_student_into_course() throws Exception {
         userRepository.save(new User("alex","alex@email.com"));
@@ -108,7 +110,7 @@ class CourseControllerTest {
                 .andExpect(status().isCreated());
     }
 
-    @DisplayName("Esse teste deve matricular um estudante em vários cursos")
+    @DisplayName("This test should enroll a student into multiple courses")
     @Test
     void should_enroll_student_into_multiple_courses() throws Exception {
         userRepository.save(new User("alex","alex@email.com"));
@@ -128,7 +130,7 @@ class CourseControllerTest {
                 .andExpect(status().isCreated());
     }
 
-    @DisplayName("Esse método não deve matricular um estudante por não achá-lo")
+    @DisplayName("This method shouldn't enroll a student because it didn't find him")
     @Test
     void should_not_enroll_student_because_student_was_not_found() throws Exception {
         courseRepository.save(new Course("java-1", "Java OO", "Java and Object Orientation: Encapsulation, Inheritance and Polymorphism."));
@@ -141,7 +143,7 @@ class CourseControllerTest {
                 .andExpect(status().isNotFound());
     }
 
-    @DisplayName("Esse método não deve matricular um estudante porque o curso não foi achado")
+    @DisplayName("This method shouldn't enroll a student because it didn't find a corresponding course")
     @Test
     void should_not_enroll_student_because_course_was_not_found() throws Exception {
         userRepository.save(new User("alex","alex@email.com"));
@@ -154,7 +156,7 @@ class CourseControllerTest {
                 .andExpect(status().isNotFound());
     }
 
-    @DisplayName("Esse teste não deve matricular um estudante porque ele já está matriculado")
+    @DisplayName("This test shouldn't enroll a student because he is already enrollend into this class")
     @Test
     void should_not_enroll_student_because_he_is_already_enrolled() throws Exception {
         User user = new User("alex","alex@email.com");
@@ -171,7 +173,7 @@ class CourseControllerTest {
 
     }
 
-    @DisplayName("Esse método deve retornar o relatório de matrículas")
+    @DisplayName("This method should retrieve the enrollment report")
     @Test
     void should_retrieve_enrollment_report() throws Exception {
         User user1 = new User("alex","alex@email.com");
@@ -197,11 +199,9 @@ class CourseControllerTest {
                 .andExpect(jsonPath("$[1].email", is("ana@email.com")));
     }
 
-    @DisplayName("Esse método não deve retornar o relatório de matrículas porque não há nada para ser retornado")
+    @DisplayName("This method shouldn't retrieve the enrollment report because there's nothing to retrieve")
     @Test
     void should_return_no_content_exception_because_there_are_no_enrolled_students() throws Exception {
-        User user1 = new User("alex","alex@email.com");
-        User user2 = new User("ana","ana@email.com");
 
         mockMvc.perform(get("/courses/enroll/report")
                 .accept(MediaType.APPLICATION_JSON))

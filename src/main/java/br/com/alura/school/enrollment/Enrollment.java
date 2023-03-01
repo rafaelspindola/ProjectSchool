@@ -8,7 +8,7 @@ import javax.persistence.*;
 import java.util.Date;
 import java.util.Objects;
 
-// Essa classe foi criada para representar o objeto da matrícula
+// This class was created to represent the object of an enrollment
 @Entity(name = "Enrollment")
 @Table(name = "course_enrollment")
 public class Enrollment {

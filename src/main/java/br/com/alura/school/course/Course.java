@@ -48,6 +48,10 @@ public class Course {
         this.description = description;
     }
 
+    public void setCode(String code) {
+        this.code = code;
+    }
+
     String getCode() {
         return code;
     }
