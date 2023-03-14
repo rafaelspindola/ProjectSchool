@@ -2,7 +2,7 @@
 
 Essa é a solução que encontrei para os problemas do desafio técnico. Os requisitos estão detalhados nesse arquivo: 
 
-https://github.com/rafaelspindola/ProjectSchoolAlura/blob/main/requisitos.md
+https://github.com/rafaelspindola/ProjectSchool/blob/main/requisitos.md
 
 ## Executando a API
 
