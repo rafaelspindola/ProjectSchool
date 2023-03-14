@@ -1,6 +1,6 @@
 # ProjectSchoolAlura
 
-Essa é a solução que encontrei para os problemas do desafio técnico da Alura. Os requisitos estão detalhados nesse arquivo: 
+Essa é a solução que encontrei para os problemas do desafio técnico. Os requisitos estão detalhados nesse arquivo: 
 
 https://github.com/rafaelspindola/ProjectSchoolAlura/blob/main/requisitos.md
 
