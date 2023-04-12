@@ -1,4 +1,4 @@
-# ProjectSchoolAlura
+# ProjectSchool
 
 Essa é a solução que encontrei para os problemas do desafio técnico. Os requisitos estão detalhados nesse arquivo: 
 
