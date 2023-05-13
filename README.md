@@ -166,6 +166,12 @@ para resolver esse problema, foi implementado um clearDatabase() após cada test
 
 ![teste 8](https://user-images.githubusercontent.com/108681887/222067939-d770151e-7828-4162-989c-d4c82c096c93.PNG)
 
+## Scripts SQL:
+
+![image](https://github.com/rafaelspindola/ProjectSchool/assets/108681887/161391ac-c6f3-4cf0-af0c-9aebb4cf03ce)
+
+![image](https://github.com/rafaelspindola/ProjectSchool/assets/108681887/2d19cd3b-5539-4b68-ae0b-f897e29bd4cc)
+
 ## Observações
 
 1 - o logger foi implementado adicionalmente para verificação de bugs e erros em código.
