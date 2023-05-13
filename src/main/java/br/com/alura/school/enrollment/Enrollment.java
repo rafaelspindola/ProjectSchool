@@ -15,7 +15,6 @@ public class Enrollment {
 
 
     @EmbeddedId
-    @GeneratedValue
     private EnrollmentId id;
 
     @ManyToOne(fetch = FetchType.EAGER)

@@ -6,7 +6,6 @@ import br.com.alura.school.enrollment.NewEnrollmentRequest;
 import br.com.alura.school.user.User;
 import br.com.alura.school.user.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -45,17 +44,6 @@ class CourseControllerTest {
 
     @Autowired
     private EnrollmentRepository enrollmentRepository;
-
-    /*
-       This method was added because there were some tests that weren't passing as a whole (although they did pass as a solo test).
-       It probably means the other tests are modifying the same data they rely on, so I cleaned the data after each test performed.
-     */
-    @AfterEach
-    public void clearDatabase() {
-        enrollmentRepository.deleteAll();
-        courseRepository.deleteAll();
-        userRepository.deleteAll();
-    }
 
     @Test
     void should_retrieve_course_by_code() throws Exception {
@@ -166,10 +154,10 @@ class CourseControllerTest {
     @DisplayName("This test should enroll a student into a course")
     @Test
     void should_enroll_student_into_course() throws Exception {
-        userRepository.save(new User("alex","alex@email.com"));
+        userRepository.save(new User("ana","ana@email.com"));
         courseRepository.save(new Course("java-1", "Java OO", "Java and Object Orientation: Encapsulation, Inheritance and Polymorphism."));
 
-        NewEnrollmentRequest newEnrollmentRequest = new NewEnrollmentRequest("alex", Date.from(Instant.now()));
+        NewEnrollmentRequest newEnrollmentRequest = new NewEnrollmentRequest("ana", Date.from(Instant.now()));
 
         mockMvc.perform(post("/courses/java-1/enroll")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -180,18 +168,17 @@ class CourseControllerTest {
     @DisplayName("This test should enroll a student into multiple courses")
     @Test
     void should_enroll_student_into_multiple_courses() throws Exception {
-        userRepository.save(new User("alex","alex@email.com"));
+        userRepository.save(new User("ana","ana@email.com"));
         courseRepository.save(new Course("java-1", "Java OO", "Java and Object Orientation: Encapsulation, Inheritance and Polymorphism."));
-        courseRepository.save(new Course("spring-2", "Spring Boot", "Spring Boot"));
-
-        NewEnrollmentRequest newEnrollmentRequest = new NewEnrollmentRequest("alex", Date.from(Instant.now()));
+        courseRepository.save(new Course("java-2", "Java Collections", "Java Collections: Lists, Sets, Maps and more."));
+        NewEnrollmentRequest newEnrollmentRequest = new NewEnrollmentRequest("ana", Date.from(Instant.now()));
 
         mockMvc.perform(post("/courses/java-1/enroll")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonMapper.writeValueAsString(newEnrollmentRequest)))
                 .andExpect(status().isCreated());
 
-        mockMvc.perform(post("/courses/spring-2/enroll")
+        mockMvc.perform(post("/courses/java-2/enroll")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonMapper.writeValueAsString(newEnrollmentRequest)))
                 .andExpect(status().isCreated());
