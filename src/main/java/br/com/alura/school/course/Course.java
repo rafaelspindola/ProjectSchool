@@ -36,7 +36,6 @@ public class Course {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-
     private List<Enrollment> enrolledUsers = new ArrayList<>();
 
     @Deprecated

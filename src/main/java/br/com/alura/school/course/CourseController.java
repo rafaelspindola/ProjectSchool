@@ -12,7 +12,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import javax.persistence.EntityManager;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.Comparator;
@@ -30,13 +29,11 @@ class CourseController {
     private final CourseRepository courseRepository;
 
     private final UserRepository userRepository;
-    private final EntityManager entityManager;
 
 
-    CourseController(CourseRepository courseRepository, UserRepository userRepository, EntityManager entityManager) {
+    CourseController(CourseRepository courseRepository, UserRepository userRepository) {
         this.courseRepository = courseRepository;
         this.userRepository = userRepository;
-        this.entityManager = entityManager;
     }
 
 
@@ -103,7 +100,6 @@ class CourseController {
             throw new ResponseStatusException(BAD_REQUEST, "User is already enrolled in the course");
         }
         course.addUser(user);
-        entityManager.clear();
         courseRepository.save(course);
         LOGGER.info("Enrollment accomplished.");
         return ResponseEntity.status(CREATED).build();

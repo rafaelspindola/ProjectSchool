@@ -223,7 +223,7 @@ class CourseControllerTest {
                 .andExpect(status().isNotFound());
     }
 
-    @DisplayName("This test shouldn't enroll a student because he is already enrollend into this class")
+    @DisplayName("This test shouldn't enroll a student because he is already enrolled into this class")
     @Test
     void should_not_enroll_student_because_he_is_already_enrolled() throws Exception {
         User user = new User("alex","alex@email.com");
