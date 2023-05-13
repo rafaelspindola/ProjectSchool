@@ -1,14 +1,33 @@
-# ProjectSchoolAlura
+# ProjectSchool
 
-Essa é a solução que encontrei para os problemas do desafio técnico da Alura. Os requisitos estão detalhados nesse arquivo: 
+Essa é a solução que encontrei para os problemas do desafio técnico. Os requisitos estão detalhados nesse arquivo: 
 
-https://github.com/rafaelspindola/ProjectSchoolAlura/blob/main/requisitos.md
+https://github.com/rafaelspindola/ProjectSchool/blob/main/requisitos.md
+
+## Executando a API
+
+git clone https://github.com/rafaelspindola/ProjectSchool.git
+
+cd ProjectSchool
+
+./mvnw spring-boot:run
+
+## Sobre o projeto
+
+A ideia é simular o sistema de uma escola com cursos e alunos. É possível adicionar alunos ao sistema ou achá-los pelo nome de usuário.
+Além disso, também é possível adicionar cursos ao sistema, listar todos os cursos disponíveis e procurar um curso específico pelo seu código. 
+Essas funcionalidades já haviam sido implementadas antes do início do desafio técnico.
+O desafio requerido foi:
+1. Ajustar o teste da funcionalidade GET de listar todos os cursos, que revelou um bug no código de requisição do controller;
+2. Criar uma requisição POST para realizar a matrícula de um aluno em uma disciplina;
+3. Criar uma requisição GET que gerasse um relatório de matrículas segundo sua ordem decrescente de quantidade de matrículas por aluno,
+sendo que para ser considerado na busca o aluno precisa ter ao menos uma matrícula.
 
 ## Swagger
 
 http://localhost:8080/swagger-ui/index.html#/
 
-API como um todo: 
+Panorama geral da aplicação: 
 
 ![swagger 1](https://user-images.githubusercontent.com/108681887/222069273-6bd80237-b9f8-4f3a-a6d5-ab464de73a81.PNG)
 
@@ -22,6 +41,19 @@ Já a matrícula POST `/courses/{code}/enroll` e o relatório de matrículas GET
 
 ![swagger 3](https://user-images.githubusercontent.com/108681887/222069752-451714e8-8c3f-459c-bd7d-2a8f76cfd9bc.PNG)
 
+## Postman
+
+**Listar Cursos:**
+
+![postman 1](https://user-images.githubusercontent.com/108681887/222193456-2aceda93-877a-467b-9b44-84de5ec8661c.PNG)
+
+**Relatório de matrículas em ordem decrescente:**
+
+![postman 2](https://user-images.githubusercontent.com/108681887/222193949-8ad57832-d084-4b93-8968-d8ef285ab888.PNG)
+
+**Gerar uma matrícula:**
+
+![postman 3](https://user-images.githubusercontent.com/108681887/222194124-c7682a5b-e10c-4de7-ba1d-94a115606d75.PNG)
 
 ## 1 - Correção dos testes automatizados
 Esse teste estava com problemas e gerando o seguinte erro:
@@ -37,11 +69,11 @@ Esse era o método com problemas:
 Diferentemente do que o erro sugeria, o problema não estava na falta de definição do conteúdo, mas sim numa requisição com retorno errado.
 Essa foi a solução encontrada:
 
-![solução 1](https://user-images.githubusercontent.com/108681887/222060269-794ee2cd-a57b-4b06-b2f3-1ae65467a89a.PNG)
+![solução 1](https://user-images.githubusercontent.com/108681887/222191435-c8bb6f5c-0a22-494f-a0c4-dc55a41e5a1f.PNG)
 
 A primeira linha requere ao banco de dados que retorne uma lista de todos os cursos disponíveis.
 Logo após isso, cada objeto de curso é transformado num objeto de resposta de cursos, associando ambas as coisas e criando uma lista de cursos como resposta.
-O retorno é então caracterizado por uma lista de cursos disponíveis e status 200 OK.
+O retorno é então caracterizado por uma lista de cursos disponíveis e status 200 Ok, caso contrário retorna status 204 No Content.
 
 ## 2 - Implementar matrícula de usuário
 A matrícula de um indivíduo em um curso sugere uma relação "many to many" entre as entidades de usuário e curso com uma coluna extra para registrar a data do processo.
@@ -51,9 +83,9 @@ Esse foi o método criado no CourseController com endpoint `/courses/{courseCode
 
 ![solução 2](https://user-images.githubusercontent.com/108681887/222062514-6b48ff6a-20ee-42c2-8820-85521a7e57e9.PNG)
 
-A primeira linha procura se um usuário existe pelo seu nome de usuário e, caso não exista, retorna status 404 not found.
-Depois um curso é procurado pelo seu código e, caso não exista, retorna um status 404 not found.
-Então é checado se tal usuário que faz o requerimento de matrícula já não está matriculado no curso. Se estiver, a rematrícula é impedida e retorna o status 400 bad request.
+A primeira linha procura se um usuário existe pelo seu nome de usuário e, caso não exista, retorna status 404 Not Found.
+Depois um curso é procurado pelo seu código e, caso não exista, retorna um status 404 Not Found.
+Então é checado se tal usuário que faz o requerimento de matrícula já não está matriculado no curso. Se estiver, a rematrícula é impedida e retorna o status 400 Bad Request.
 Se tudo ocorrer bem, o usuário é adicionado à lista de alunos matriculados, a matrícula é guardada no banco de dados e um status 201 created é retornado.
 
 **P.S: o entityManager.clear() foi necessário porque, sem ele, um status 500 era retornado e o código de erro sugestionava que haviam duas entidades sendo associadas ao mesmo registro.
@@ -71,11 +103,11 @@ Dez testes foram adicionados para essa funcionalidade. Foi criado um EnrollmentR
 
 ![teste 2](https://user-images.githubusercontent.com/108681887/222064063-9b7b4084-6474-4928-89c2-f027f6b35394.PNG)
 
-**O terceiro testa a exceção not found 404 por não achar um estudante válido a ser matriculado:**
+**O terceiro testa a exceção Not Found 404 por não achar um estudante válido a ser matriculado:**
 
 ![teste 3](https://user-images.githubusercontent.com/108681887/222064159-58b8dca1-3ce4-454b-8605-9a797895edad.PNG)
 
-**O quarto testa a exceção 404 not found por não achar um curso valido para que o estudante se matricule:** 
+**O quarto testa a exceção 404 Not Found por não achar um curso valido para que o estudante se matricule:** 
 
 ![teste 4](https://user-images.githubusercontent.com/108681887/222064525-b5592f11-245c-4ed4-a551-c63514b256a8.PNG)
 
@@ -91,7 +123,7 @@ Dez testes foram adicionados para essa funcionalidade. Foi criado um EnrollmentR
 
 ![teste 10](https://user-images.githubusercontent.com/108681887/222182772-c24e5854-83e5-4180-8cd2-11ef481e4678.PNG)
 
-**O oitavo testa exceções relacionadas a validações como @NotBlack e limite de caracteres de input:**
+**O oitavo testa exceções relacionadas a validações como @NotBlank e limite de caracteres de input:**
 
 ![teste 11](https://user-images.githubusercontent.com/108681887/222183198-77970bab-108e-4d33-b569-9182cf5999e9.PNG)
 
@@ -113,8 +145,8 @@ foi criado um método HTTP GET no endpoint `/courses/enroll/report` e uma classe
 Primeiramente é realizada a procura por todos os usuários com ao menos uma matrícula em curso.
 Após isso é criada uma sequência de objetos (stream) e cada usuário é associado (map) a um objeto do relatório pelo número de matrículas e seu email.
 A partir daí esses objetos são ordenados segundo seu valor de quantidade de matrículas em ordem decrescente e é criada uma lista desses objetos. 
-O operador ternário é utilizado para tornar o código mais limpo, retornando status 204 no content caso não haja um relatório a ser produzido.
-Se houver, o retorno é status 200 ok.
+O operador ternário é utilizado para tornar o código mais limpo, retornando status 204 No Content caso não haja um relatório a ser produzido.
+Se houver, o retorno é status 200 Ok.
 
 ### 3.1 - Testes para a funcionalidade de relatório
 
@@ -124,7 +156,7 @@ Dois testes foram implementados para a nova funcionalidade.
 
 ![teste 6](https://user-images.githubusercontent.com/108681887/222066927-f0bdb6a8-8333-4b4a-8a3c-fbb9911687f9.PNG)
 
-**O segundo testa a ausência de relatório e uma exceção status 204 no content:**
+**O segundo testa a ausência de relatório e uma exceção status 204 No Content:**
 
 ![teste 7](https://user-images.githubusercontent.com/108681887/222067204-2371faa3-7033-403e-8d6d-3fbfa1adcc8e.PNG)
 
