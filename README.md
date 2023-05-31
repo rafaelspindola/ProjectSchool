@@ -172,6 +172,54 @@ para resolver esse problema, foi implementado um clearDatabase() após cada test
 
 ![image](https://github.com/rafaelspindola/ProjectSchool/assets/108681887/2d19cd3b-5539-4b68-ae0b-f897e29bd4cc)
 
+## Configurações Docker
+
+```
+version: "3.7"
+services:
+  # ====================================================================================================================
+  # POSTGRES SERVER
+  # ====================================================================================================================
+  pg-docker:
+    image: postgres:14-alpine
+    container_name: dev-postgresql
+    environment:
+      POSTGRES_DB: mydatabase
+      POSTGRES_PASSWORD: 1234567
+    ports:
+      - 5433:5432
+    volumes:
+      - ./.data/postgresql/data:/var/lib/postgresql/data
+    networks:
+      - dev-network
+  # ====================================================================================================================
+  # PGADMIN
+  # ====================================================================================================================
+  pgadmin-docker:
+    image: dpage/pgadmin4
+    container_name: dev-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: me@example.com
+      PGADMIN_DEFAULT_PASSWORD: 1234567
+    ports:
+      - 5050:80
+    volumes:
+      - ./.data/pgadmin:/var/lib/pgadmin
+    depends_on:
+      - pg-docker
+    networks:
+      - dev-network
+# ======================================================================================================================
+# REDE
+# ======================================================================================================================
+networks:
+  dev-network:
+    driver: bridge
+```
+
+Como subir as instâncias: execute o powershell do windows como administrador, entre dentro da pasta com o arquivo docker-compose.yml e digite `docker-compose up -d`. 
+Após isso, acesse localhost:5050/ no browser, digite usuário `me@example.com` e senha `1234567` para entrar no banco de dados.
+
 ## Observações
 
 1 - o logger foi implementado adicionalmente para verificação de bugs e erros em código.
