@@ -1,7 +1,7 @@
 package br.com.challenge.school.course;
 
 import br.com.challenge.school.enrollment.Enrollment;
-import br.com.challenge.school.user.User;
+import br.com.challenge.school.users.User;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;

@@ -1,6 +1,6 @@
-DROP TABLE IF EXISTS User cascade;
+DROP TABLE IF EXISTS Users cascade;
 
-CREATE TABLE User (
+CREATE TABLE Users (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(20) NOT NULL UNIQUE,
     email VARCHAR(100) NOT NULL
@@ -19,9 +19,9 @@ DROP TABLE IF EXISTS course_enrollment cascade;
 
 CREATE TABLE course_enrollment (
     course_id BIGINT NOT NULL,
-    user_id BIGINT NOT NULL,
+    users_id BIGINT NOT NULL,
     enrolled_on TIMESTAMP(0),
     PRIMARY KEY (course_id, user_id),
     CONSTRAINT FK_course_enrollment_course FOREIGN KEY (course_id) REFERENCES Course (id),
-    CONSTRAINT FK_course_enrollment_user FOREIGN KEY (user_id) REFERENCES User (id)
+    CONSTRAINT FK_course_enrollment_users FOREIGN KEY (user_id) REFERENCES Users (id)
 );

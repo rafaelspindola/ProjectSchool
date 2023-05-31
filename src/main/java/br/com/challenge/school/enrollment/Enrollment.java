@@ -1,7 +1,7 @@
 package br.com.challenge.school.enrollment;
 
 import br.com.challenge.school.course.Course;
-import br.com.challenge.school.user.User;
+import br.com.challenge.school.users.User;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -22,7 +22,7 @@ public class Enrollment {
     private Course course;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @MapsId("user_id")
+    @MapsId("users_id")
     private User user;
 
     @Column(name = "enrolled_on")

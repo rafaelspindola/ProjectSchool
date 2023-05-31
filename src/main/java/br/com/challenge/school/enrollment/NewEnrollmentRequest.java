@@ -1,7 +1,7 @@
 package br.com.challenge.school.enrollment;
 
 import br.com.challenge.school.course.Course;
-import br.com.challenge.school.user.User;
+import br.com.challenge.school.users.User;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.validation.constraints.NotBlank;
