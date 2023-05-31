@@ -19,7 +19,7 @@ DROP TABLE IF EXISTS course_enrollment cascade;
 
 CREATE TABLE course_enrollment (
     course_id BIGINT NOT NULL,
-    users_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
     enrolled_on TIMESTAMP(0),
     PRIMARY KEY (course_id, user_id),
     CONSTRAINT FK_course_enrollment_course FOREIGN KEY (course_id) REFERENCES Course (id),
